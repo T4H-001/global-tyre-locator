@@ -3,7 +3,12 @@ import Header from "@/components/layout/Header";
 import StatsCards from "@/components/dashboard/StatsCards";
 import TyreRegistrationForm from "@/components/forms/TyreRegistrationForm";
 import TyreTable from "@/components/tracking/TyreTable";
+import RecoveryDashboard from "@/components/dashboard/RecoveryDashboard";
+import LifecycleFlowDashboard from "@/components/dashboard/LifecycleFlowDashboard";
+import ComplianceReports from "@/components/reports/ComplianceReports";
+import PredictiveInsights from "@/components/insights/PredictiveInsights";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart3, Globe, Target } from "lucide-react";
 
 interface TyreData {
@@ -75,6 +80,98 @@ const Index = () => {
     setTyres(prev => [newTyre, ...prev]);
   };
 
+  // Sample data for enhanced dashboards
+  const dashboardData = {
+    recovery: {
+      nationalRecoveryRate: 66,
+      stateRecoveryRates: [
+        { state: "NSW", rate: 68, trend: "up" as const, tyreCount: 150000, issues: ["OTR dumping"] },
+        { state: "VIC", rate: 72, trend: "up" as const, tyreCount: 120000, issues: [] },
+        { state: "QLD", rate: 58, trend: "down" as const, tyreCount: 180000, issues: ["Mining OTR", "Remote dumping"] },
+        { state: "WA", rate: 65, trend: "stable" as const, tyreCount: 95000, issues: ["Collection gaps"] },
+        { state: "SA", rate: 70, trend: "up" as const, tyreCount: 75000, issues: [] },
+        { state: "TAS", rate: 75, trend: "up" as const, tyreCount: 25000, issues: [] }
+      ],
+      dumpingAlerts: [
+        { location: "Springbrook National Park, QLD", count: 550, severity: "high" as const, lastIncident: "2025-01-10" },
+        { location: "Blue Mountains, NSW", count: 200, severity: "medium" as const, lastIncident: "2025-01-08" },
+        { location: "Grampians, VIC", count: 85, severity: "low" as const, lastIncident: "2025-01-05" }
+      ],
+      tyreTypes: [
+        { type: "Passenger", recovered: 280000, total: 350000, rate: 80 },
+        { type: "Light Truck", recovered: 95000, total: 120000, rate: 79 },
+        { type: "Mining OTR", recovered: 15000, total: 100000, rate: 15 },
+        { type: "Agricultural", recovered: 12000, total: 18000, rate: 67 }
+      ]
+    },
+    lifecycle: {
+      flowStages: [
+        { stage: "New", count: 15, percentage: 25, icon: "store", color: "bg-primary/20 text-primary" },
+        { stage: "In Use", count: 25, percentage: 42, icon: "car", color: "bg-warning/20 text-warning" },
+        { stage: "Collected", count: 12, percentage: 20, icon: "wrench", color: "bg-secondary/20 text-secondary-foreground" },
+        { stage: "Recycled", count: 8, percentage: 13, icon: "recycle", color: "bg-success/20 text-success" }
+      ],
+      recentTransitions: [
+        { tyreId: "TYR-1M9X2-ABC12", fromStage: "In Use", toStage: "Collected", timestamp: "2 hours ago", location: "Sydney, NSW", vehicleInfo: "Toyota HiLux ABC123", stakeholder: "JAX Tyres" },
+        { tyreId: "TYR-1M9X3-DEF34", fromStage: "Collected", toStage: "Recycled", timestamp: "4 hours ago", location: "Melbourne, VIC", stakeholder: "Green Tyre Recycling" },
+        { tyreId: "TYR-1M9X4-GHI56", fromStage: "New", toStage: "In Use", timestamp: "6 hours ago", location: "Brisbane, QLD", vehicleInfo: "Ford Ranger DEF456", stakeholder: "Tyrepower" }
+      ],
+      stakeholderActivity: [
+        { type: "Retailer", name: "JAX Tyres Sydney", tyresProcessed: 1250, avgProcessingTime: "2.5 days", compliance: 95 },
+        { type: "Mechanic", name: "City Auto Repairs", tyresProcessed: 450, avgProcessingTime: "1.2 days", compliance: 88 },
+        { type: "Recycler", name: "Green Tyre Solutions", tyresProcessed: 3200, avgProcessingTime: "7.8 days", compliance: 92 }
+      ]
+    }
+  };
+
+  const reportsData = {
+    annualSummary: {
+      totalTyresRegistered: 2450000,
+      recoveredTyres: 1617000,
+      recoveryRate: 66,
+      environmentalImpact: {
+        co2Saved: 15000,
+        crumbRubberProduced: 45000,
+        roadsBuilt: 850
+      }
+    },
+    stateCompliance: [
+      { state: "NSW", regulation: "Waste Avoidance & Resource Recovery Act", status: "compliant" as const, fineRisk: 2000, lastAudit: "Dec 2024", nextDeadline: "Jun 2025" },
+      { state: "QLD", regulation: "Waste Reduction & Recycling Act", status: "warning" as const, fineRisk: 12000, lastAudit: "Oct 2024", nextDeadline: "Mar 2025" },
+      { state: "VIC", regulation: "Environment Protection Act", status: "compliant" as const, fineRisk: 1000, lastAudit: "Nov 2024", nextDeadline: "May 2025" }
+    ],
+    brandPerformance: [
+      { brand: "Michelin", tyresSold: 450000, tyresRecovered: 315000, recoveryRate: 70, feesPaid: 180000, complianceScore: 92 },
+      { brand: "Bridgestone", tyresSold: 520000, tyresRecovered: 338000, recoveryRate: 65, feesPaid: 208000, complianceScore: 88 },
+      { brand: "Continental", tyresSold: 380000, tyresRecovered: 266000, recoveryRate: 70, feesPaid: 152000, complianceScore: 91 }
+    ],
+    dumpingIncidents: [
+      { location: "Springbrook National Park", tyreCount: 550, estimatedFine: 66000, status: "investigating" as const, reportDate: "Jan 10, 2025" },
+      { location: "Blue Mountains", tyreCount: 200, estimatedFine: 24000, status: "resolved" as const, reportDate: "Jan 8, 2025" }
+    ]
+  };
+
+  const insightsData = {
+    recoveryPredictions: {
+      currentRate: 66,
+      projectedRate: 72,
+      confidence: 85,
+      factors: ["Increased RFID adoption", "New collection points", "EV market growth"]
+    },
+    dumpingRiskAlerts: [
+      { location: "Remote QLD mining sites", riskLevel: "high" as const, predictedIncidents: 3, preventionActions: ["Increase patrols", "Mobile collection units", "Stakeholder engagement"] },
+      { location: "NSW national parks", riskLevel: "medium" as const, predictedIncidents: 1, preventionActions: ["Signage campaigns", "Regular monitoring"] }
+    ],
+    optimizationSuggestions: [
+      { category: "Collection", suggestion: "Deploy mobile RFID scanners to fleet operators", impact: "15% increase in tracking", implementationCost: "$50K", roi: "250%" },
+      { category: "Processing", suggestion: "Partner with local councils for tire-derived fuel", impact: "20% cost reduction", implementationCost: "$75K", roi: "180%" }
+    ],
+    marketTrends: [
+      { trend: "Electric vehicle tire demand surge", impact: "positive" as const, timeframe: "2025-2027", recommendation: "Develop EV-specific tracking protocols" },
+      { trend: "Mining tire burial regulations tightening", impact: "neutral" as const, timeframe: "2025", recommendation: "Increase OTR recycling capacity" }
+    ]
+  };
+
   const renderContent = () => {
     switch (currentSection) {
       case "register":
@@ -83,75 +180,30 @@ const Index = () => {
         return <TyreTable tyres={tyres} />;
       case "reports":
         return (
-          <div className="space-y-6">
-            <StatsCards stats={stats} />
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <BarChart3 className="h-5 w-5 text-primary" />
-                    <span>Regional Distribution</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span>Australia</span>
-                      <span className="font-medium">33.3%</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Germany</span>
-                      <span className="font-medium">33.3%</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>United States</span>
-                      <span className="font-medium">33.3%</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Globe className="h-5 w-5 text-primary" />
-                    <span>Stewardship Schemes</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span>TSA</span>
-                      <span className="font-medium">1</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>EPR</span>
-                      <span className="font-medium">1</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>RMA</span>
-                      <span className="font-medium">1</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Target className="h-5 w-5 text-primary" />
-                    <span>Recovery Rate</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-success mb-2">66.7%</div>
-                  <p className="text-sm text-muted-foreground">
-                    2 of 3 tyres successfully processed
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
+          <Tabs defaultValue="compliance" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="compliance">Compliance</TabsTrigger>
+              <TabsTrigger value="recovery">Recovery</TabsTrigger>
+              <TabsTrigger value="lifecycle">Lifecycle</TabsTrigger>
+              <TabsTrigger value="insights">Insights</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="compliance" className="space-y-6">
+              <ComplianceReports data={reportsData} />
+            </TabsContent>
+            
+            <TabsContent value="recovery" className="space-y-6">
+              <RecoveryDashboard data={dashboardData.recovery} />
+            </TabsContent>
+            
+            <TabsContent value="lifecycle" className="space-y-6">
+              <LifecycleFlowDashboard data={dashboardData.lifecycle} />
+            </TabsContent>
+            
+            <TabsContent value="insights" className="space-y-6">
+              <PredictiveInsights data={insightsData} />
+            </TabsContent>
+          </Tabs>
         );
       default:
         return (
