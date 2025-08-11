@@ -64,8 +64,8 @@ export default function TyreTable({ tyres }: TyreTableProps) {
       tyre.manufacturer.toLowerCase().includes(searchTerm.toLowerCase()) ||
       tyre.model.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesStatus = !statusFilter || tyre.status === statusFilter;
-    const matchesCountry = !countryFilter || tyre.country === countryFilter;
+    const matchesStatus = !statusFilter || statusFilter === "all" || tyre.status === statusFilter;
+    const matchesCountry = !countryFilter || countryFilter === "all" || tyre.country === countryFilter;
 
     return matchesSearch && matchesStatus && matchesCountry;
   });
@@ -126,8 +126,8 @@ export default function TyreTable({ tyres }: TyreTableProps) {
             <SelectTrigger className="w-full sm:w-40">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="">All Statuses</SelectItem>
+            <SelectContent className="z-[100]">
+              <SelectItem value="all">All Statuses</SelectItem>
               {uniqueStatuses.map(status => (
                 <SelectItem key={status} value={status}>{status}</SelectItem>
               ))}
@@ -138,8 +138,8 @@ export default function TyreTable({ tyres }: TyreTableProps) {
             <SelectTrigger className="w-full sm:w-40">
               <SelectValue placeholder="Filter by country" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="">All Countries</SelectItem>
+            <SelectContent className="z-[100]">
+              <SelectItem value="all">All Countries</SelectItem>
               {uniqueCountries.map(country => (
                 <SelectItem key={country} value={country}>{country}</SelectItem>
               ))}
